@@ -2,7 +2,7 @@
 
 ## Objetivos do Projeto
 
-- [] Criar uma interface  
+- [x] Criar uma interface  
 - [] Usuario pode digitar texto
 - [] Usuario pode digitar prazo de conclução
       - sem prazo - não é prioridade - fim da fila

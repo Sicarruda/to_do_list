@@ -1,0 +1,36 @@
+version: "3"
+
+volumes:
+  db_data: {}
+
+services:
+  mysql:
+    container_name: mysql
+    image: mysql
+    volumes:
+      - db_data:/var/lib/mysql
+    ports: 
+      - "3306:3306"
+    networks:
+      - projeto
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_DATABASE: "LALA"
+      MYSQL_USER: "jessica"
+      MYSQL_PASSWORD: "123456"
+
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+    depends_on:
+      - mysql
+    networks:
+      - projeto
+
+networks:
+  projeto:
+
+
