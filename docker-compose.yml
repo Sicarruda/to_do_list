@@ -1,14 +1,13 @@
 version: "3"
 
 volumes:
-  db_data: {}
+  migrations: {}
 
 services:
   mysql:
-    container_name: mysql
     image: mysql
     volumes:
-      - db_data:/var/lib/mysql
+      - migrations:/docker-entrypoint-initdb.d
     ports: 
       - "3306:3306"
     networks:
