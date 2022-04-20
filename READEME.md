@@ -3,11 +3,11 @@
 ## Objetivos do Projeto
 
 - [x] Criar uma interface  
-- [] Usuario pode digitar texto
-- [] Usuario pode digitar prazo de conclução
+- [x] Usuario pode digitar texto
+- [x] Usuario pode digitar prazo de conclução
       - sem prazo - não é prioridade - fim da fila
-- [] Salvar valores digitados no banco
-- [] Exibir valores salvos
+- [x] Salvar valores digitados no banco
+- [x] Exibir valores salvos
 - [] Editar valores salvos
 - [] Excluir valores salvos
 - [] Testes dos componentes das tarefas
