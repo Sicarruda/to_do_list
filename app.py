@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, jsonify, url_for, redirect
 from flask_mysqldb import MySQL
 from datetime import datetime
+from email_validation import email_validation
+from password_validation import password_validation
 import logging
 
 logger = logging.getLogger('app')
@@ -14,20 +16,42 @@ app.config['MYSQL_DB'] = 'LALA'
  
 mysql = MySQL(app)
 
+def insert_user_data():
+    cursor = mysql.connection.cursor()
+    email = request.form['email-user']
+    password = request.form['user-password']
+    insert_user = 'INSERT INTO User (email, password) VALUES (%s, %s)'
+    logger.error(f'Criando log de erro {email}, {password}')
+    data_user = (email, password)
+    cursor.execute(insert_user, data_user)
+    mysql.connection.commit()
+    cursor.close()
+
+def find_user_in_database(email, password):
+    cursor = mysql.connection.cursor()
+    sql = f"SELECT email FROM LALA.User WHERE email = '{email}' AND password = '{password}'"
+    cursor.execute(sql) 
+    data_email = cursor.fetchall()
+    logger.info(f'criando log de info {data_email}')
+    cursor.close()
+    if data_email:
+        return True
+    return False
+
 
 @app.route('/', methods = ['POST', 'GET'])
 def login():
     
     if request.method == "POST":
-        cursor = mysql.connection.cursor()
-        email = request.form['email-user']
-        password = request.form['user-password']
-        insert_user = 'INSERT INTO User (email, password) VALUES (%s, %s)'
-        logger.error(f'AAAAAAAAAAA {email}, {password}')
-        data_user = (email, password)
-        cursor.execute(insert_user, data_user)
-        mysql.connection.commit()
-        cursor.close()
+        user_email = request.form['email-user']
+        user_password = request.form['user-password']
+        email_validation(user_email)
+        password_validation(user_password)
+        if find_user_in_database(user_email, user_password) == False:
+            insert_user_data()
+            return redirect('home')
+
+        
     return render_template("login.html")
 
 
