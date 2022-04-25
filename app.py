@@ -1,3 +1,5 @@
+from email import message
+import re
 from flask import Flask, render_template, request, jsonify, url_for, redirect
 from flask_mysqldb import MySQL
 from datetime import datetime
@@ -16,6 +18,7 @@ app.config['MYSQL_DB'] = 'LALA'
  
 mysql = MySQL(app)
 
+
 def insert_user_data():
     cursor = mysql.connection.cursor()
     email = request.form['email-user']
@@ -27,15 +30,16 @@ def insert_user_data():
     mysql.connection.commit()
     cursor.close()
 
+
 def find_user_in_database(email, password):
     cursor = mysql.connection.cursor()
     sql = f"SELECT email FROM LALA.User WHERE email = '{email}' AND password = '{password}'"
     cursor.execute(sql) 
-    data_email = cursor.fetchall()
-    logger.info(f'criando log de info {data_email}')
+    data = cursor.fetchall()
+    logger.info(f'criando log de info {data}')
     cursor.close()
-    if data_email:
-        return True
+    if data:
+        return jsonify({"message": "olá"})
     return False
 
 
@@ -50,14 +54,14 @@ def login():
         if find_user_in_database(user_email, user_password) == False:
             insert_user_data()
             return redirect('home')
+        else: 
+            return redirect('home')
 
-        
     return render_template("login.html")
 
 
 @app.route('/home', methods = ['POST', 'GET'])
 def homepage():
-    
     cursor = mysql.connection.cursor()
     if request.method == "POST":
         user_task = request.form['user-task']
