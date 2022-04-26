@@ -1,5 +1,3 @@
-from email import message
-import re
 from flask import Flask, render_template, request, jsonify, url_for, redirect
 from flask_mysqldb import MySQL
 from datetime import datetime
@@ -19,10 +17,8 @@ app.config['MYSQL_DB'] = 'LALA'
 mysql = MySQL(app)
 
 
-def insert_user_data():
+def insert_user_data(email, password):
     cursor = mysql.connection.cursor()
-    email = request.form['email-user']
-    password = request.form['user-password']
     insert_user = 'INSERT INTO User (email, password) VALUES (%s, %s)'
     logger.error(f'Criando log de erro {email}, {password}')
     data_user = (email, password)
@@ -39,7 +35,7 @@ def find_user_in_database(email, password):
     logger.info(f'criando log de info {data}')
     cursor.close()
     if data:
-        return jsonify({"message": "olá"})
+        return True
     return False
 
 
@@ -52,8 +48,7 @@ def login():
         email_validation(user_email)
         password_validation(user_password)
         if find_user_in_database(user_email, user_password) == False:
-            insert_user_data()
-            return redirect('home')
+            return redirect('register')
         else: 
             return redirect('home')
 
@@ -78,6 +73,19 @@ def homepage():
     cursor.close() 
     return render_template("homepage.html",value=data)
     
+
+@app.route('/register', methods = ['POST', 'GET'])
+def register():
+    if request.method == 'POST':
+        register_user_email = request.form['register-email-user']
+        register_user_password = request.form['register-user-password']
+        email_validation(register_user_email)
+        password_validation(register_user_password)
+        insert_user_data(register_user_email, register_user_password)
+        return redirect('home')
+    return render_template("register.html")
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
