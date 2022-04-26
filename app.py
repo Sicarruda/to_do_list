@@ -76,13 +76,27 @@ def homepage():
 
 @app.route('/register', methods = ['POST', 'GET'])
 def register():
+    
     if request.method == 'POST':
         register_user_email = request.form['register-email-user']
         register_user_password = request.form['register-user-password']
+
         email_validation(register_user_email)
         password_validation(register_user_password)
+        cursor = mysql.connection.cursor()
+        sql = f"SELECT email FROM User WHERE email = '{register_user_email}'"
+        cursor.execute(sql) 
+        data = cursor.fetchall()
+
+        if data:
+            logger.error(f'{register_user_email} já cadastrado')
+            raise ValueError(f'{register_user_email} já cadastrado')
+      
+        cursor.close() 
+
         insert_user_data(register_user_email, register_user_password)
         return redirect('home')
+
     return render_template("register.html")
 
 
