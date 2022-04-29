@@ -17,7 +17,7 @@ app.config['MYSQL_DB'] = 'LALA'
 mysql = MySQL(app)
 
 
-def insert_user_data(email, password):
+def create_new_user(email, password):
     cursor = mysql.connection.cursor()
     insert_user = 'INSERT INTO User (email, password) VALUES (%s, %s)'
     logger.error(f'Criando log de erro {email}, {password}')
@@ -41,7 +41,7 @@ def find_user_in_database(email, password):
 
 @app.route('/', methods = ['POST', 'GET'])
 def login():
-    
+    cursor = mysql.connection.cursor()
     if request.method == "POST":
         user_email = request.form['email-user']
         user_password = request.form['user-password']
@@ -49,22 +49,28 @@ def login():
         password_validation(user_password)
         if find_user_in_database(user_email, user_password) == False:
             return redirect('register')
-        else: 
-            return redirect('home')
+        else:
+            cursor = mysql.connection.cursor()
+            sql = f"SELECT id_user FROM User WHERE email = '{user_email}' AND password = '{user_password}'"
+            cursor.execute(sql) 
+            data = cursor.fetchall()
+            id_data = data[0]
+            cursor.close()
+            return redirect(f'home/{id_data[0]}')
 
     return render_template("login.html")
 
 
-@app.route('/home', methods = ['POST', 'GET'])
-def homepage():
+@app.route('/home/<id_user>', methods = ['POST', 'GET'])
+def homepage(id_user):
     cursor = mysql.connection.cursor()
     if request.method == "POST":
         user_task = request.form['user-task']
         dead_line = request.form['dead-line']
         date_creation = datetime.now()
 
-        insert_task = 'INSERT INTO Tasks (user_task, dead_line, date_creation) VALUES (%s, %s, %s)'
-        data_task = (user_task, dead_line, date_creation )
+        insert_task = 'INSERT INTO Tasks (user_task, dead_line, date_creation, user_id) VALUES (%s, %s, %s,%s)'
+        data_task = (user_task, dead_line, date_creation, id_user )
         cursor.execute(insert_task, data_task)
         mysql.connection.commit()
         
@@ -76,14 +82,14 @@ def homepage():
 
 @app.route('/register', methods = ['POST', 'GET'])
 def register():
-    
+    cursor = mysql.connection.cursor()
     if request.method == 'POST':
         register_user_email = request.form['register-email-user']
         register_user_password = request.form['register-user-password']
 
         email_validation(register_user_email)
         password_validation(register_user_password)
-        cursor = mysql.connection.cursor()
+        
         sql = f"SELECT email FROM User WHERE email = '{register_user_email}'"
         cursor.execute(sql) 
         data = cursor.fetchall()
@@ -92,11 +98,15 @@ def register():
             logger.error(f'{register_user_email} já cadastrado')
             raise ValueError(f'{register_user_email} já cadastrado')
       
-        cursor.close() 
+        create_new_user(register_user_email, register_user_password)
 
-        insert_user_data(register_user_email, register_user_password)
-        return redirect('home')
-
+        sql_url = f"SELECT id_user FROM User WHERE email = '{register_user_email}' AND password = '{register_user_password}'"
+        cursor.execute(sql_url) 
+        data_url = cursor.fetchall()
+        id_data = data[0]
+        cursor.close()
+        return redirect(f'home/{id_data[0]}')
+        
     return render_template("register.html")
 
 
