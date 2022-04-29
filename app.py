@@ -65,7 +65,7 @@ def login():
 def homepage(id_user):
     cursor = mysql.connection.cursor()
     if request.method == "POST":
-        logger.error(f'AAAAAAAAAAAAAAA')
+
         user_task = request.form['user-task']
         dead_line = request.form['dead-line']
         date_creation = datetime.now()
@@ -74,12 +74,10 @@ def homepage(id_user):
         data_task = (user_task, dead_line, date_creation, id_user )
         cursor.execute(insert_task, data_task)
         mysql.connection.commit()
-        logger.error(f'BBBBBBBBBBBBBBBBB')
-        
-    cursor.execute("select * from Tasks") 
+    sql = f"select * from Tasks WHERE id_user = {id_user}"
+    cursor.execute(sql) 
     data = cursor.fetchall() #data from database
     cursor.close()
-    logger.error(f'CCCCCCCCCCCCCCCCCCCC') 
     return render_template("homepage.html",value=data, id=id_user)
     
 
