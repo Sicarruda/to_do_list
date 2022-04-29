@@ -65,19 +65,22 @@ def login():
 def homepage(id_user):
     cursor = mysql.connection.cursor()
     if request.method == "POST":
+        logger.error(f'AAAAAAAAAAAAAAA')
         user_task = request.form['user-task']
         dead_line = request.form['dead-line']
         date_creation = datetime.now()
 
-        insert_task = 'INSERT INTO Tasks (user_task, dead_line, date_creation, user_id) VALUES (%s, %s, %s,%s)'
+        insert_task = 'INSERT INTO Tasks (user_task, dead_line, date_creation, id_user) VALUES (%s, %s, %s,%s)'
         data_task = (user_task, dead_line, date_creation, id_user )
         cursor.execute(insert_task, data_task)
         mysql.connection.commit()
+        logger.error(f'BBBBBBBBBBBBBBBBB')
         
     cursor.execute("select * from Tasks") 
     data = cursor.fetchall() #data from database
-    cursor.close() 
-    return render_template("homepage.html",value=data)
+    cursor.close()
+    logger.error(f'CCCCCCCCCCCCCCCCCCCC') 
+    return render_template("homepage.html",value=data, id=id_user)
     
 
 @app.route('/register', methods = ['POST', 'GET'])
@@ -103,7 +106,7 @@ def register():
         sql_url = f"SELECT id_user FROM User WHERE email = '{register_user_email}' AND password = '{register_user_password}'"
         cursor.execute(sql_url) 
         data_url = cursor.fetchall()
-        id_data = data[0]
+        id_data = data_url[0]
         cursor.close()
         return redirect(f'home/{id_data[0]}')
         
