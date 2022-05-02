@@ -94,7 +94,7 @@ def homepage(id_user):
         if request.form['submit'] == 'cadastrar':
             add_new_task(id_user)
         elif request.form['submit'] == 'edit':
-            logger.error(f'CCCCCCCCCC')
+            logger.warn(f'submit is not implemented yet')
         else:
             delete_task()
   
