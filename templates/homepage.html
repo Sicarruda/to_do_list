@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>To-Do List</title>
+</head>
+<body>
+  <h1>To Do list</h1>
+  <form action="/home/{{id}}" method="post">
+    <input type="text" name="user-task" placeholder="Tarefa"> 
+    <p>Prazo
+      <input type="date" name="dead-line" placeholder="prazo">
+    </p>
+    <button type="submit" value="cadastrar" name="submit">Enviar</button>
+  </form>
+  
+  <table> 
+    <thead> 
+    <tr> 
+        <th>concluido</th>
+        <th>task</th>
+        <th>criação</th> 
+        <th>dead-line</th>
+        <th>editar</th>
+        <th>excluir</th>
+         
+    </tr> 
+    </thead> 
+    <tbody> 
+        {% for row in value %}
+          <form action="/home/{{id}}" method="post">
+            <tr>
+                <td><input type="checkbox" name=checkbox value={{row[0]}} ></td> 
+                <td>{{row[1]}}</td>
+                <td>{{row[3]}}</td> 
+                <td>{{row[2]}}</td>
+                <td><button type="submit" value="edit" name="submit">editar task</button></td>
+                <td><button type="submit" value={{row[0]}} name="submit">excluir task</button></td>
+            </tr>
+          </form>     
+        {% endfor %} 
+    </tbody> 
+</table>
+</body>
+</html>
