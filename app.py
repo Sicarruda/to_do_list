@@ -1,4 +1,3 @@
-from ast import Delete
 from flask import Flask, render_template, request, jsonify, url_for, redirect
 from flask_mysqldb import MySQL
 from datetime import datetime
@@ -72,17 +71,18 @@ def delete_task():
 
 @app.route('/', methods = ['POST', 'GET'])
 def login():
-    if request.method == "POST":
+  if request.method == "POST":
+        cursor = mysql.connection.cursor()
         user_email = request.form['email-user']
         user_password = request.form['user-password']
         email_validation(user_email)
         password_validation(user_password)
-
+        
         if find_user_in_database(user_email, user_password) == False:
             return redirect('register')
         else:
-            return redirect_user_to_home_id(user_email, user_password)            
-
+            return redirect_user_to_home_id(user_email, user_password) 
+          
     return render_template("login.html")
 
 
