@@ -19,10 +19,10 @@ mysql = MySQL(app)
 
 def create_new_user(email, password):
     cursor = mysql.connection.cursor()
-    insert_user = 'INSERT INTO User (email, password) VALUES (%s, %s)'
+    sql = 'INSERT INTO User (email, password) VALUES (%s, %s)'
     logger.error(f'Criando log de erro {email}, {password}')
     data_user = (email, password)
-    cursor.execute(insert_user, data_user)
+    cursor.execute(sql, data_user)
     mysql.connection.commit()
     cursor.close()
 
@@ -39,45 +39,70 @@ def find_user_in_database(email, password):
     return False
 
 
+def redirect_user_to_home_id(user_email, user_password):
+    cursor = mysql.connection.cursor()
+    sql = f"SELECT id_user FROM User WHERE email = '{user_email}' AND password = '{user_password}'"
+    cursor.execute(sql) 
+    data = cursor.fetchall()
+    id_data = data[0]
+    cursor.close()
+    return redirect(f'home/{id_data[0]}')
+
+
+def add_new_task(id_user):
+    cursor = mysql.connection.cursor()
+    user_task = request.form['user-task']
+    dead_line = request.form['dead-line']
+    date_creation = datetime.now()
+    sql = 'INSERT INTO Tasks (user_task, dead_line, date_creation, id_user) VALUES (%s, %s, %s,%s)'
+    data_task = (user_task, dead_line, date_creation, id_user )
+    cursor.execute(sql, data_task)
+    mysql.connection.commit()
+    cursor.close()
+
+def delete_task():
+    cursor = mysql.connection.cursor()
+    id_task_delete = request.form['submit']
+    sql = f'DELETE FROM Tasks WHERE id_tasks = "{id_task_delete}"'
+    cursor.execute(sql)
+    mysql.connection.commit()
+    cursor.close()
+
+
 @app.route('/', methods = ['POST', 'GET'])
 def login():
-    cursor = mysql.connection.cursor()
-    if request.method == "POST":
+  if request.method == "POST":
+        cursor = mysql.connection.cursor()
         user_email = request.form['email-user']
         user_password = request.form['user-password']
         email_validation(user_email)
         password_validation(user_password)
+        
         if find_user_in_database(user_email, user_password) == False:
             return redirect('register')
         else:
-            cursor = mysql.connection.cursor()
-            sql = f"SELECT id_user FROM User WHERE email = '{user_email}' AND password = '{user_password}'"
-            cursor.execute(sql) 
-            data = cursor.fetchall()
-            id_data = data[0]
-            cursor.close()
-            return redirect(f'home/{id_data[0]}')
-
+            return redirect_user_to_home_id(user_email, user_password) 
+          
     return render_template("login.html")
 
 
 @app.route('/home/<id_user>', methods = ['POST', 'GET'])
 def homepage(id_user):
     cursor = mysql.connection.cursor()
+   
     if request.method == "POST":
-
-        user_task = request.form['user-task']
-        dead_line = request.form['dead-line']
-        date_creation = datetime.now()
-
-        insert_task = 'INSERT INTO Tasks (user_task, dead_line, date_creation, id_user) VALUES (%s, %s, %s,%s)'
-        data_task = (user_task, dead_line, date_creation, id_user )
-        cursor.execute(insert_task, data_task)
-        mysql.connection.commit()
+        if request.form['submit'] == 'cadastrar':
+            add_new_task(id_user)
+        elif request.form['submit'] == 'edit':
+            logger.warn(f'submit is not implemented yet')
+        else:
+            delete_task()
+  
     sql = f"select * from Tasks WHERE id_user = {id_user}"
     cursor.execute(sql) 
     data = cursor.fetchall() #data from database
     cursor.close()
+    
     return render_template("homepage.html",value=data, id=id_user)
     
 
@@ -100,16 +125,9 @@ def register():
             raise ValueError(f'{register_user_email} já cadastrado')
       
         create_new_user(register_user_email, register_user_password)
-
-        sql_url = f"SELECT id_user FROM User WHERE email = '{register_user_email}' AND password = '{register_user_password}'"
-        cursor.execute(sql_url) 
-        data_url = cursor.fetchall()
-        id_data = data_url[0]
-        cursor.close()
-        return redirect(f'home/{id_data[0]}')
+        redirect_user_to_home_id(register_user_email, register_user_password)
         
     return render_template("register.html")
-
 
 
 if __name__ == "__main__":

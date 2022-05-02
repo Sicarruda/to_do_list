@@ -13,8 +13,9 @@
     <p>Prazo
       <input type="date" name="dead-line" placeholder="prazo">
     </p>
-    <button type="submit" name="submit">Enviar</button>
+    <button type="submit" value="cadastrar" name="submit">Enviar</button>
   </form>
+  
   <table> 
     <thead> 
     <tr> 
@@ -28,15 +29,18 @@
     </tr> 
     </thead> 
     <tbody> 
-        {% for row in value %}  
+        {% for row in value %}
+          <form action="/home/{{id}}" method="post">
             <tr>
-                <td><input type="checkbox"></td> 
+                <td><input type="checkbox" name=checkbox value={{row[0]}} ></td> 
                 <td>{{row[1]}}</td>
                 <td>{{row[3]}}</td> 
                 <td>{{row[2]}}</td>
-                <td><button type="button" name="edit">editar task</button></td>
-                <td><button type="button" name="delete">excluir task</button></td>
-            </tr> 
+                <td><button type="submit" value="edit" name="submit">editar task</button></td>
+                <td><button type="submit" value={{row[0]}} name="submit">excluir task</button></td>
+            </tr>
+          </form>     
+
         {% endfor %} 
     </tbody> 
 </table>
