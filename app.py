@@ -60,6 +60,7 @@ def add_new_task(id_user):
     mysql.connection.commit()
     cursor.close()
 
+
 def delete_task():
     cursor = mysql.connection.cursor()
     id_task_delete = request.form['submit']
@@ -87,14 +88,16 @@ def login():
 @app.route('/home/<id_user>', methods = ['POST', 'GET'])
 def homepage(id_user):
     cursor = mysql.connection.cursor()
-   
+
     if request.method == "POST":
+
         if request.form['submit'] == 'cadastrar':
             add_new_task(id_user)
         elif request.form['submit'] == 'edit':
             logger.warn(f'submit is not implemented yet')
         else:
             delete_task()
+    
   
     sql = f"select * from Tasks WHERE id_user = {id_user}"
     cursor.execute(sql) 
