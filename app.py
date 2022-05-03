@@ -1,5 +1,3 @@
-from asyncio import tasks
-from tkinter import Variable
 from flask import Flask, render_template, request, jsonify, url_for, redirect
 from flask_mysqldb import MySQL
 from datetime import datetime
@@ -62,6 +60,7 @@ def add_new_task(id_user):
     mysql.connection.commit()
     cursor.close()
 
+
 def delete_task():
     cursor = mysql.connection.cursor()
     id_task_delete = request.form['task-id']
@@ -91,16 +90,15 @@ def login():
             return redirect('register')
         else:
             return redirect_user_to_home_id(user_email, user_password) 
-          
     return render_template("login.html")
-
 
 
 @app.route('/home/<id_user>', methods = ['POST', 'GET'])
 def homepage(id_user):
     cursor = mysql.connection.cursor()
-   
+
     if request.method == "POST":
+
         if request.form['submit'] == 'cadastrar':
             add_new_task(id_user)
         elif request.form['submit'] == 'edit':
@@ -108,6 +106,7 @@ def homepage(id_user):
             return redirect(f'/home/{id_user}/task/{task_id}')
         else:
             delete_task()
+    
   
     sql = f"select * from Tasks WHERE id_user = {id_user}"
     cursor.execute(sql) 
