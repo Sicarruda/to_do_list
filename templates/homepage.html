@@ -27,17 +27,18 @@
         <th>excluir</th>
          
     </tr> 
-    </thead> 
+    </thead>  
     <tbody> 
         {% for row in value %}
           <form action="/home/{{id}}" method="post">
             <tr>
-                <td><input type="checkbox" name=checkbox value={{row[0]}} ></td> 
+                <td><input type="hidden" name='task-id' value={{row[0]}}></td>
+                <td><input type="checkbox" name='checkbox' ></td> 
                 <td>{{row[1]}}</td>
                 <td>{{row[3]}}</td> 
                 <td>{{row[2]}}</td>
                 <td><button type="submit" value="edit" name="submit">editar task</button></td>
-                <td><button type="submit" value={{row[0]}} name="submit">excluir task</button></td>
+                <td><button type="submit" value='delete' name="submit">excluir task</button></td>
             </tr>
           </form>     
 

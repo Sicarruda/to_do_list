@@ -1,3 +1,5 @@
+from asyncio import tasks
+from tkinter import Variable
 from flask import Flask, render_template, request, jsonify, url_for, redirect
 from flask_mysqldb import MySQL
 from datetime import datetime
@@ -62,8 +64,16 @@ def add_new_task(id_user):
 
 def delete_task():
     cursor = mysql.connection.cursor()
-    id_task_delete = request.form['submit']
+    id_task_delete = request.form['task-id']
     sql = f'DELETE FROM Tasks WHERE id_tasks = "{id_task_delete}"'
+    cursor.execute(sql)
+    mysql.connection.commit()
+    cursor.close()
+
+
+def edit_task(id_task, user_task, dead_line):
+    cursor = mysql.connection.cursor()
+    sql = f'UPDATE Tasks SET user_task = "{user_task}", dead_line = "{dead_line}" WHERE id_tasks = "{id_task}"'
     cursor.execute(sql)
     mysql.connection.commit()
     cursor.close()
@@ -71,8 +81,7 @@ def delete_task():
 
 @app.route('/', methods = ['POST', 'GET'])
 def login():
-  if request.method == "POST":
-        cursor = mysql.connection.cursor()
+    if request.method == "POST":
         user_email = request.form['email-user']
         user_password = request.form['user-password']
         email_validation(user_email)
@@ -86,6 +95,7 @@ def login():
     return render_template("login.html")
 
 
+
 @app.route('/home/<id_user>', methods = ['POST', 'GET'])
 def homepage(id_user):
     cursor = mysql.connection.cursor()
@@ -94,7 +104,8 @@ def homepage(id_user):
         if request.form['submit'] == 'cadastrar':
             add_new_task(id_user)
         elif request.form['submit'] == 'edit':
-            logger.warn(f'submit is not implemented yet')
+            task_id = request.form['task-id']
+            return redirect(f'/home/{id_user}/task/{task_id}')
         else:
             delete_task()
   
@@ -105,6 +116,16 @@ def homepage(id_user):
     
     return render_template("homepage.html",value=data, id=id_user)
     
+
+@app.route('/home/<id_user>/task/<id_task>', methods = ['POST', 'GET'])
+def edit(id_user,id_task):
+    if request.method == "POST":
+        user_task = request.form['user-task']
+        dead_line = request.form['dead-line']
+        edit_task(id_task, user_task, dead_line)
+        return redirect(url_for('homepage', id_user = id_user))
+    return render_template("edit.html", idUser = id_user, idTask =id_task)
+
 
 @app.route('/register', methods = ['POST', 'GET'])
 def register():
@@ -119,6 +140,7 @@ def register():
         sql = f"SELECT email FROM User WHERE email = '{register_user_email}'"
         cursor.execute(sql) 
         data = cursor.fetchall()
+        cursor.close()
 
         if data:
             logger.error(f'{register_user_email} já cadastrado')
