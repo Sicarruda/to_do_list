@@ -8,8 +8,8 @@
       - sem prazo - não é prioridade - fim da fila
 - [x] Salvar valores digitados no banco
 - [x] Exibir valores salvos
-- [] Editar valores salvos
-- [] Excluir valores salvos
+- [x] Editar valores salvos
+- [x] Excluir valores salvos
 - [] Testes dos componentes das tarefas
 
 ---
