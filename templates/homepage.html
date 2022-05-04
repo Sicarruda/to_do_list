@@ -17,6 +17,16 @@
     <button type="submit" value="cadastrar" name="submit">Enviar</button>
   </form>
   
+  <form action="/home/{{id}}" method="get">
+    <select name = 'sort'>
+      <option value="data-criacao">data de criação</option>
+      <option value="prazo">prazo</option>
+      <option value="concluida">concluida</option>
+      <option value="pendente">pendente</option>
+    </select>
+    <button type="submit">Ordenar</button>
+  </form>
+
   <table> 
     <thead> 
     <tr> 

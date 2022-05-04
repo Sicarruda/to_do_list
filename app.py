@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, jsonify, url_for, redirect
 from flask_mysqldb import MySQL
 from datetime import datetime
+
+from importlib_metadata import method_cache
 from email_validation import email_validation
 from password_validation import password_validation
 import logging
@@ -13,7 +15,7 @@ app.config['MYSQL_HOST'] = 'to_do_list_mysql_1'
 app.config['MYSQL_USER'] = 'jessica'
 app.config['MYSQL_PASSWORD'] = '123456'
 app.config['MYSQL_DB'] = 'LALA'
- 
+app.debug=True
 mysql = MySQL(app)
 
 
@@ -77,6 +79,15 @@ def edit_task(id_task, user_task, dead_line):
     mysql.connection.commit()
     cursor.close()
 
+def order_tasks(id_user):
+    if request.args.get('sort') == 'data-criacao':
+        sql = f"select * from Tasks WHERE id_user = {id_user} ORDER BY date_creation"
+    elif request.args.get('sort') == 'prazo':
+        sql = f"select * from Tasks WHERE id_user = {id_user} ORDER BY dead_line"
+    else:
+        sql = f"select * from Tasks WHERE id_user = {id_user}"
+    return sql
+        
 
 @app.route('/', methods = ['POST', 'GET'])
 def login():
@@ -98,18 +109,15 @@ def homepage(id_user):
     cursor = mysql.connection.cursor()
 
     if request.method == "POST":
-
         if request.form['submit'] == 'cadastrar':
             add_new_task(id_user)
         elif request.form['submit'] == 'edit':
             task_id = request.form['task-id']
             return redirect(f'/home/{id_user}/task/{task_id}')
-        else:
-            delete_task()
+        elif request.form['submit'] == 'delete':
+            delete_task()    
     
-  
-    sql = f"select * from Tasks WHERE id_user = {id_user}"
-    cursor.execute(sql) 
+    cursor.execute(order_tasks(id_user)) 
     data = cursor.fetchall() #data from database
     cursor.close()
     
