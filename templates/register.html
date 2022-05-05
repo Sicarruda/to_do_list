@@ -8,12 +8,41 @@
   <title>register</title>
 </head>
 <body>
-<Form action="/register" method="post">
-  <h1>Cadastro</h1>
-  <input type="email" name="register-email-user" placeholder="Email">
-  <input type="password" name="register-user-password" placeholder="Senha">
-  <button type="submit" name="register-submit">Entrar</button>
-</Form>  
+  
+<div class="container">
+  <div class="col align-self-center mx-auto p-5">
+    <h1 class="text-center">Cadastro</h1>
+  </div>
+  <div class="d-flex border justify-content-center align-items-center">
+    <form action="/register" method="post">
+      <div class="row justify-content-center align-items-center">
+        <div class="col align-self-center mx-auto pb-1 pt-5">
+          <input
+            type="email"
+            class="form-control"
+            name="register-email-user"
+            placeholder="Email"
+          />
+        </div>
+        <div class="col align-self-center mx-auto pb-1 pt-5">
+          <input
+            type="password"
+            class="form-control"
+            name="register-user-password"
+            placeholder="Senha"
+          />
+        </div>
+      </div>
+      <div class="row justify-content-center align-items-center">
+        <div class="col align-self-center mx-auto pb-3 pt-1">
+          <button type="submit" class="btn btn-success" name="register-submit">
+            Cadastrar
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>

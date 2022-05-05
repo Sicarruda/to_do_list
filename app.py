@@ -153,7 +153,7 @@ def register():
             raise ValueError(f'{register_user_email} já cadastrado')
       
         create_new_user(register_user_email, register_user_password)
-        redirect_user_to_home_id(register_user_email, register_user_password)
+        return redirect_user_to_home_id(register_user_email, register_user_password)
         
     return render_template("register.html")
 

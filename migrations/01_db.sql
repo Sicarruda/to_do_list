@@ -11,7 +11,6 @@ CREATE TABLE Tasks (
   user_task varchar(255),
   dead_line DATE,
   date_creation varchar(50),
-  concluded TINYINT,
   id_user INT(11), 
   PRIMARY KEY (id_tasks),
   FOREIGN KEY(id_user) REFERENCES User(id_user)
