@@ -86,7 +86,13 @@ def order_tasks(id_user):
         sql = f"select * from Tasks WHERE id_user = {id_user} ORDER BY dead_line"
     else:
         sql = f"select * from Tasks WHERE id_user = {id_user}"
+
+    if request.args.get('sort-type') == 'des':
+        sql = sql+' DESC'
+    
     return sql
+
+
         
 
 @app.route('/', methods = ['POST', 'GET'])
