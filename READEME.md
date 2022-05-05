@@ -14,16 +14,7 @@
 
 ---
 
-- [] pesquisar todas as tarefas salvas 
-- [] pesquisar todas as tarefas concluidas
-- [] pesquisar todas as tarefas pendentes
-- [] testes dos componetes da pesquisa
-
----
-
-- [] organizar por data
-- [] organizar por prazo
-- [] organizar por concluidas
-- [] organizar por pendentes
+- [x] organizar por data
+- [x] organizar por prazo
 - [] testes dos componetes da organização
 
