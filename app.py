@@ -1,10 +1,9 @@
-from flask import Flask, render_template, request, jsonify, url_for, redirect
+from flask import Flask, render_template, request, url_for, redirect, make_response
 from flask_mysqldb import MySQL
 from datetime import datetime
-
-from importlib_metadata import method_cache
 from email_validation import email_validation
 from password_validation import password_validation
+from login_validation import login_validation
 import logging
 
 logger = logging.getLogger('app')
@@ -48,7 +47,9 @@ def redirect_user_to_home_id(user_email, user_password):
     data = cursor.fetchall()
     id_data = data[0]
     cursor.close()
-    return redirect(f'home/{id_data[0]}')
+    authentication = make_response(redirect(f'home/{id_data[0]}'))
+    authentication.set_cookie('userID',f'{id_data[0]}', None, None,'/' )
+    return authentication
 
 
 def add_new_task(id_user):
@@ -80,6 +81,7 @@ def edit_task(id_task, user_task, dead_line):
     cursor.close()
 
 def order_tasks(id_user):
+    
     if request.args.get('sort') == 'data-criacao':
         sql = f"select * from Tasks WHERE id_user = {id_user} ORDER BY date_creation"
     elif request.args.get('sort') == 'prazo':
@@ -97,6 +99,7 @@ def order_tasks(id_user):
 
 @app.route('/', methods = ['POST', 'GET'])
 def login():
+
     if request.method == "POST":
         user_email = request.form['email-user']
         user_password = request.form['user-password']
@@ -113,6 +116,8 @@ def login():
 @app.route('/home/<id_user>', methods = ['POST', 'GET'])
 def homepage(id_user):
     cursor = mysql.connection.cursor()
+
+    login_validation(id_user)
 
     if request.method == "POST":
         if request.form['submit'] == 'cadastrar':
@@ -132,6 +137,9 @@ def homepage(id_user):
 
 @app.route('/home/<id_user>/task/<id_task>', methods = ['POST', 'GET'])
 def edit(id_user,id_task):
+
+    login_validation(id_user)
+
     if request.method == "POST":
         user_task = request.form['user-task']
         dead_line = request.form['dead-line']
@@ -143,6 +151,7 @@ def edit(id_user,id_task):
 @app.route('/register', methods = ['POST', 'GET'])
 def register():
     cursor = mysql.connection.cursor()
+
     if request.method == 'POST':
         register_user_email = request.form['register-email-user']
         register_user_password = request.form['register-user-password']

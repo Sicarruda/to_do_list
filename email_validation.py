@@ -12,4 +12,3 @@ def email_validation(email):
     if match == None:
         logger.error(f'{email} não tem a forma correta')
         raise ValueError(f'{email} não tem a forma correta')
-
